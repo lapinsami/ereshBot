@@ -93,11 +93,12 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def enable(self, ctx, ext):
         if ext == "all":
+            self.bot.load_extension("cogs.bgtasks")
+            self.bot.load_extension("cogs.dnd")
+            self.bot.load_extension("cogs.math")
+            self.bot.load_extension("cogs.misc")
+            self.bot.load_extension("cogs.admin")
             await ctx.send(f"Everything enabled")
-            with os.scandir() as directory:
-                for file in directory:
-                    if file.endswith(".py"):
-                        self.bot.load_extension(f"cogs.{file[:-3]}")
         else:
             self.bot.load_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} enabled")
@@ -110,11 +111,11 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def disable(self, ctx, ext):
         if ext == "all":
+            self.bot.unload_extension("cogs.bgtasks")
+            self.bot.unload_extension("cogs.dnd")
+            self.bot.unload_extension("cogs.math")
+            self.bot.unload_extension("cogs.misc")
             await ctx.send(f"Everything disabled")
-            with os.scandir() as directory:
-                for file in directory:
-                    if file.endswith(".py") and file != "admin.py":
-                        self.bot.unload_extension(f"cogs.{file[:-3]}")
         elif ext != 'admin':
             self.bot.unload_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} disabled")
@@ -127,11 +128,12 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def reload(self, ctx, ext):
         if ext == "all":
+            self.bot.reload_extension("cogs.bgtasks")
+            self.bot.reload_extension("cogs.dnd")
+            self.bot.reload_extension("cogs.math")
+            self.bot.reload_extension("cogs.misc")
+            self.bot.reload_extension("cogs.admin")
             await ctx.send(f"Everything reloaded")
-            with os.scandir() as directory:
-                for file in directory:
-                    if file.endswith(".py"):
-                        self.bot.reload_extension(f"cogs.{file[:-3]}")
         else:
             self.bot.reload_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} reloaded")
