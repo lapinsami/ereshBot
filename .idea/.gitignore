@@ -1,0 +1,6 @@
+# Default ignored files
+/workspace.xml
+pm_users.csv
+banned_users.csv
+status.csv
+token.csv
