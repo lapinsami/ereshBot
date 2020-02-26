@@ -1,4 +1,5 @@
 import sys
+import os
 from discord.ext import commands
 import discord
 sys.path.insert(0, '../')
@@ -91,8 +92,15 @@ class Admin(commands.Cog):
                       aliases=['load'])
     @commands.is_owner()
     async def enable(self, ctx, ext):
-        self.bot.load_extension(f"cogs.{ext}")
-        await ctx.send(f"{ext} enabled")
+        if ext == "all":
+            await ctx.send(f"Everything enabled")
+            with os.scandir() as directory:
+                for file in directory:
+                    if file.endswith(".py"):
+                        self.bot.load_extension(f"cogs.{file[:-3]}")
+        else:
+            self.bot.load_extension(f"cogs.{ext}")
+            await ctx.send(f"{ext} enabled")
 
     # Disable cog
     @commands.command(name='disable',
@@ -101,7 +109,13 @@ class Admin(commands.Cog):
                       aliases=['unload'])
     @commands.is_owner()
     async def disable(self, ctx, ext):
-        if ext != 'admin':
+        if ext == "all":
+            await ctx.send(f"Everything disabled")
+            with os.scandir() as directory:
+                for file in directory:
+                    if file.endswith(".py") and file != "admin.py":
+                        self.bot.unload_extension(f"cogs.{file[:-3]}")
+        elif ext != 'admin':
             self.bot.unload_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} disabled")
 
@@ -112,21 +126,15 @@ class Admin(commands.Cog):
                       aliases=['re'])
     @commands.is_owner()
     async def reload(self, ctx, ext):
-        self.bot.reload_extension(f"cogs.{ext}")
-        await ctx.send(f"{ext} reloaded")
-
-    # Reload all cogs
-    @commands.command(name='refresh',
-                      description="Reloads everything",
-                      brief="- Reload all",
-                      aliases=['res'])
-    @commands.is_owner()
-    async def refresh(self, ctx):
-        self.bot.reload_extension(f"cogs.math")
-        self.bot.reload_extension(f"cogs.dnd")
-        self.bot.reload_extension(f"cogs.bgtasks")
-        await ctx.send(f"Everything reloaded")
-        self.bot.reload_extension(f"cogs.admin")
+        if ext == "all":
+            await ctx.send(f"Everything reloaded")
+            with os.scandir() as directory:
+                for file in directory:
+                    if file.endswith(".py"):
+                        self.bot.reload_extension(f"cogs.{file[:-3]}")
+        else:
+            self.bot.reload_extension(f"cogs.{ext}")
+            await ctx.send(f"{ext} reloaded")
 
     @status.error
     @banUser.error
@@ -136,7 +144,6 @@ class Admin(commands.Cog):
     @enable.error
     @disable.error
     @reload.error
-    @refresh.error
     async def adminError(self, ctx, error):
         if isinstance(error, commands.NotOwner):
             await ctx.send('Nice try.')
