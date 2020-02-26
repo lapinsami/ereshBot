@@ -93,12 +93,12 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def enable(self, ctx, ext):
         if ext == "all":
+            await ctx.send(f"Everything enabled")
             self.bot.load_extension("cogs.bgtasks")
             self.bot.load_extension("cogs.dnd")
             self.bot.load_extension("cogs.math")
             self.bot.load_extension("cogs.misc")
             self.bot.load_extension("cogs.admin")
-            await ctx.send(f"Everything enabled")
         else:
             self.bot.load_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} enabled")
@@ -111,11 +111,11 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def disable(self, ctx, ext):
         if ext == "all":
+            await ctx.send(f"Everything disabled")
             self.bot.unload_extension("cogs.bgtasks")
             self.bot.unload_extension("cogs.dnd")
             self.bot.unload_extension("cogs.math")
             self.bot.unload_extension("cogs.misc")
-            await ctx.send(f"Everything disabled")
         elif ext != 'admin':
             self.bot.unload_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} disabled")
@@ -128,12 +128,12 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def reload(self, ctx, ext):
         if ext == "all":
+            await ctx.send(f"Everything reloaded")
             self.bot.reload_extension("cogs.bgtasks")
             self.bot.reload_extension("cogs.dnd")
             self.bot.reload_extension("cogs.math")
             self.bot.reload_extension("cogs.misc")
             self.bot.reload_extension("cogs.admin")
-            await ctx.send(f"Everything reloaded")
         else:
             self.bot.reload_extension(f"cogs.{ext}")
             await ctx.send(f"{ext} reloaded")
