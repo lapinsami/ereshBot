@@ -9,8 +9,8 @@ class DnD(commands.Cog):
         self.bot = bot
 
     @commands.command(name='roll',
-                      description="Rolls dice, dnd style",
-                      brief="- Rolls dice",
+                      description='Rolls dice, dnd style',
+                      brief='Rolls dice',
                       aliases=['dnd', 'dice'])
     async def roll_dnd(self, ctx, *arguments):
         arguments = list(arguments)

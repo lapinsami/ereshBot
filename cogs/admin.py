@@ -14,7 +14,7 @@ class Admin(commands.Cog):
     # Sets the status
     @commands.command(name='status',
                       description="Sets the status",
-                      brief="- Set status",
+                      brief="Set status",
                       aliases=['np', 'hougu'])
     @commands.is_owner()
     async def status(self, ctx, game, mode):
@@ -28,7 +28,7 @@ class Admin(commands.Cog):
     # Logs out the bot
     @commands.command(name='logout',
                       description="Shuts down the bot",
-                      brief="- Shutdown",
+                      brief="Shutdown",
                       aliases=['close', 'shutdown'])
     @commands.is_owner()
     async def logout(self, ctx):
@@ -38,7 +38,7 @@ class Admin(commands.Cog):
     # Toggle PMs
     @commands.command(name='allowpm',
                       description="Toggles between allowing and not allowing commands in PMs for user",
-                      brief="- Allow commands in PMs",
+                      brief="Allow commands in PMs",
                       aliases=['pm'])
     @commands.is_owner()
     async def togglePm(self, ctx, userid):
@@ -56,7 +56,7 @@ class Admin(commands.Cog):
     # Ban user
     @commands.command(name='ban',
                       description="Bans user from using the bot",
-                      brief="- Ban user")
+                      brief="Ban user")
     @commands.is_owner()
     async def banUser(self, ctx, userid):
         banned_users = getListFromFile("banned_users.csv")
@@ -72,7 +72,7 @@ class Admin(commands.Cog):
     # Unban user
     @commands.command(name='unban',
                       description="Unbans user from using the bot",
-                      brief="- Unban user")
+                      brief="Unban user")
     @commands.is_owner()
     async def unbanUser(self, ctx, userid):
         banned_users = getListFromFile("banned_users.csv")
@@ -88,7 +88,7 @@ class Admin(commands.Cog):
     # Enable cog
     @commands.command(name='enable',
                       description="Enables a cog",
-                      brief="- Enable cog",
+                      brief="Enable cog",
                       aliases=['load'])
     @commands.is_owner()
     async def enable(self, ctx, ext):
@@ -106,7 +106,7 @@ class Admin(commands.Cog):
     # Disable cog
     @commands.command(name='disable',
                       description="Disables a cog",
-                      brief="- Disable cog",
+                      brief="Disable cog",
                       aliases=['unload'])
     @commands.is_owner()
     async def disable(self, ctx, ext):
@@ -123,7 +123,7 @@ class Admin(commands.Cog):
     # Reload cog
     @commands.command(name='reload',
                       description="Reloads a cog",
-                      brief="- Reload cog",
+                      brief="Reload cog",
                       aliases=['re'])
     @commands.is_owner()
     async def reload(self, ctx, ext):
