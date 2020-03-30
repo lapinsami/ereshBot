@@ -23,8 +23,8 @@ class Math(commands.Cog):
         self.bot = bot
 
     @commands.command(name='square',
-                      description="Squares the number",
-                      brief="- Square x",
+                      description='Squares the number',
+                      brief='Square x',
                       aliases=['sq'])
     async def square(self, ctx, number=''):
         if convertNumber(number) is None:
@@ -39,8 +39,8 @@ class Math(commands.Cog):
         await ctx.send(message)
 
     @commands.command(name='squareroot',
-                      description="Squareroots the number",
-                      brief="- Squareroot x",
+                      description='Squareroots the number',
+                      brief="Squareroot x",
                       aliases=['sqrt'])
     async def squareroot(self, ctx, number=''):
         if convertNumber(number) is None:
@@ -56,6 +56,47 @@ class Math(commands.Cog):
             message += " i"
 
         await ctx.send(message)
+
+    @commands.command(name='prime',
+                      desription='Checks if the number is a prime',
+                      brief='Check if x is prime',
+                      aliases=['isprime, checkprime'])
+    async def isPrime(self, ctx, number=''):
+        if not number.isdigit():
+            await ctx.send("Please give me a number below one trillion (1 000 000 000 000)")
+            return
+
+        number = int(number)
+
+        if number > 999999999999:
+            await ctx.send("Please give me a number below one trillion (1 000 000 000 000)")
+            return
+
+        if number <= 1:
+            await ctx.send(f"{number} is not a prime.")
+            return
+
+        if number <= 3:
+            await ctx.send(f"{number} is a prime!")
+            return
+
+        if number % 2 == 0:
+            await ctx.send(f"{number} is not a prime.")
+            return
+
+        if number % 3 == 0:
+            await ctx.send(f"{number} is not a prime.")
+            return
+
+        divisor = 5
+
+        while divisor * divisor <= number:
+            if number % divisor == 0 or number % (divisor + 2) == 0:
+                await ctx.send(f"{number} is not a prime.")
+                return
+            divisor += 6
+
+        await ctx.send(f"{number} is a prime!")
 
 
 def setup(bot):
