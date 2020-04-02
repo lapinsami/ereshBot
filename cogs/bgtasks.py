@@ -2,7 +2,7 @@ import sys
 import discord
 from discord.ext import commands, tasks
 sys.path.insert(0, '../')
-from ereshFunctions import checkStatusMode, getListFromFile
+from ereshFunctions import status
 
 
 class BGTasks(commands.Cog):
@@ -13,14 +13,22 @@ class BGTasks(commands.Cog):
     @tasks.loop(minutes=30)
     async def updateStatus(self):
         await self.bot.wait_until_ready()
-        game, mode = getListFromFile("status.csv")
-        mode = checkStatusMode(mode)
-        game = discord.Game(game)
-        await self.bot.change_presence(status=mode, activity=game)
+        await self.bot.change_presence(status=status["onlineStatus"], activity=discord.Game(status["playingStatus"]))
+        for server in self.bot.guilds:
+            await server.get_member(self.bot.user.id).edit(nick=status["nickname"])
 
     @commands.Cog.listener()
     async def on_ready(self):
         self.updateStatus.start()
+
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        # 1st: if the ID of the updated member is the bot's ID
+        # 2nd: if an updated nickname exists
+        # 3rd: if the updated nick differs from the configured nick
+        # = if the bot's nickname was updated but the config was not
+        if before.id == self.bot.user.id and after.nick and after.nick != status["nickname"]:
+            await after.edit(nick=status["nickname"])
 
 
 def setup(bot):

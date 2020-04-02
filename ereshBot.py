@@ -1,7 +1,6 @@
 import discord
-import os
 from discord.ext import commands
-from ereshFunctions import getListFromFile
+from ereshFunctions import status, permissions
 
 
 def getPrefix(botti, message):
@@ -17,23 +16,26 @@ bot = commands.Bot(command_prefix=getPrefix)
 
 @bot.check
 async def commandAllowed(ctx):
-    if str(ctx.message.author.id) in getListFromFile("banned_users.csv"):
-        return False
+    if str(ctx.message.author.id) in permissions.keys():
+        if permissions[str(ctx.message.author.id)]["banned"]:
+            return False
     if isinstance(ctx.message.channel, discord.DMChannel):
-        return str(ctx.message.author.id) in getListFromFile("pm_users.csv")
+        if str(ctx.message.author.id) in permissions.keys():
+            return permissions[str(ctx.message.author.id)]["pm_user"]
+        else:
+            return False
     else:
         return True
 
 
 @bot.event
 async def on_ready():
-    print('Logged in as ' + bot.user.name)
-    print(bot.user.id)
-    print('-------------------')
+    print(f'Logged in as {bot.user.name} ({status["nickname"]}), id {bot.user.id}')
 
 
-for file in os.listdir('./cogs'):
-    if file.endswith(".py"):
-        bot.load_extension(f"cogs.{file[:-3]}")
+for extension in status["availableCogs"]:
+    if extension not in status["disabledCogs"]:
+        bot.load_extension(extension)
+        print(f"{extension} loaded")
 
 bot.run(TOKEN, bot=True, reconnect=True)

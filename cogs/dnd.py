@@ -1,5 +1,4 @@
-import sys
-import random as r
+import random as rand
 from discord.ext import commands
 
 
@@ -56,7 +55,7 @@ class DnD(commands.Cog):
             nopan_tulokset = list()
 
             for j in range(maara):
-                heitto = r.randint(1, maksimi)
+                heitto = rand.randint(1, maksimi)
                 nopan_tulokset.append(heitto)
                 message += f"{heitto}"
                 if j != maara - 1:
