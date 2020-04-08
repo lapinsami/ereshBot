@@ -4,12 +4,12 @@ from discord.ext import commands
 import discord
 
 sys.path.insert(0, '../')
-from ereshFunctions import checkStatusMode, writeToYAML, status, permissions, default_permissions
+from ereshFunctions import checkStatusMode, writeToYAML, getMessage, status, permissions, default_permissions
 
 
 def isAdmin(ctx):
-    if str(ctx.author.id) in permissions.keys():
-        admin = permissions[str(ctx.author.id)]["admin"]
+    if ctx.author.id in permissions.keys():
+        admin = permissions[ctx.author.id]["admin"]
     else:
         admin = False
 
@@ -32,7 +32,7 @@ class Admin(commands.Cog):
     async def nick(self, ctx, nickname):
 
         status["nickname"] = nickname
-        await ctx.send(f"Thus, shalt thou call me {nickname}")
+        await ctx.send(getMessage("nickChanged", nickname))
         await ctx.guild.get_member(self.bot.user.id).edit(nick=nickname)
         writeToYAML("status.yml", status)
 
@@ -48,7 +48,7 @@ class Admin(commands.Cog):
 
         status["playingStatus"] = str(playing)
         status["onlineStatus"] = str(online)
-        await ctx.send(f"Playing {str(playing)} ({str(online)})")
+        await ctx.send(getMessage("statusChanged", str(playing), str(online)))
         await self.bot.change_presence(status=online, activity=playing)
         writeToYAML("status.yml", status)
 
@@ -59,7 +59,7 @@ class Admin(commands.Cog):
                       aliases=['close', 'shutdown'])
     @commands.is_owner()
     async def logout(self, ctx):
-        await ctx.send("Shutting down...")
+        await ctx.send(getMessage("logout"))
         await ctx.bot.logout()
 
     # Toggle PMs
@@ -78,10 +78,10 @@ class Admin(commands.Cog):
         # and if they don't, enable them
         if permissions[userid]["pm_user"]:
             permissions[userid]["pm_user"] = False
-            await ctx.send(f"Commands in PMs disabled for userid {userid}")
+            await ctx.send(getMessage("disablePm", userid))
         else:
             permissions[userid]["pm_user"] = True
-            await ctx.send(f"Commands in PMs enabled for userid {userid}")
+            await ctx.send(getMessage("enablePm", userid))
 
         writeToYAML("permissions.yml", permissions)
 
@@ -99,12 +99,12 @@ class Admin(commands.Cog):
         # if user already banned, do nothing
         # if user not banned, ban them (if not admin)
         if permissions[userid]["banned"]:
-            await ctx.send(f"Userid {userid} is already banned")
-        elif not isAdmin(userid):
+            await ctx.send(getMessage("alreadyBanned", userid))
+        elif not permissions[userid]["admin"]:
             permissions[userid]["banned"] = True
-            await ctx.send(f"Userid {userid} banned")
+            await ctx.send(getMessage("banned", userid))
         else:
-            await ctx.send(f"Userid {userid} is an admin")
+            await ctx.send(getMessage("isAdmin", userid))
 
         writeToYAML("permissions.yml", permissions)
 
@@ -123,8 +123,9 @@ class Admin(commands.Cog):
         # if user not banned, do nothing
         if permissions[userid]["banned"]:
             permissions[userid]["banned"] = False
+            await ctx.send(getMessage("unBanned", userid))
         else:
-            await ctx.send(f"Userid {userid} is not banned")
+            await ctx.send(getMessage("isNotBanned", userid))
 
         writeToYAML("permissions.yml", permissions)
 
@@ -144,16 +145,16 @@ class Admin(commands.Cog):
 
             status["disabledCogs"] = list()
 
-            await ctx.send(f"Everything enabled")
+            await ctx.send(getMessage("reloadAll"))
 
         # load the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:
             self.bot.load_extension(f"cogs.{ext}")
             status["disabledCogs"].remove(f"cogs.{ext}")
-            await ctx.send(f"{ext} enabled")
+            await ctx.send(getMessage("enableCog", ext))
 
         else:
-            await ctx.send(f"No cog named {ext}")
+            await ctx.send(getMessage("cogNotFound", ext))
 
         # write status to file
         writeToYAML("status.yml", status)
@@ -173,17 +174,17 @@ class Admin(commands.Cog):
                     self.bot.unload_extension(extension)
                     status["disabledCogs"].append(extension)
 
-            await ctx.send(f"Everything disabled")
+            await ctx.send(getMessage("dsableAll"))
 
         # unload the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:
             if ext != "admin":
                 self.bot.unload_extension(f"cogs.{ext}")
                 status["disabledCogs"].append(f"cogs.{ext}")
-                await ctx.send(f"{ext} disabled")
+                await ctx.send(getMessage("disableCog", ext))
 
         else:
-            await ctx.send(f"No cog named {ext}")
+            await ctx.send(getMessage("cogNotFound", ext))
 
         # write status to file
         writeToYAML("status.yml", status)
@@ -202,12 +203,12 @@ class Admin(commands.Cog):
                 if extension not in status["disabledCogs"]:
                     self.bot.reload_extension(extension)
 
-            await ctx.send(f"Reloaded all enabled cogs. Disabled cogs unaffected. Use --load all to load them.")
+            await ctx.send(getMessage("reloadAll"))
 
         # reload the cog given as the argument
         elif f"cogs.{ext}" not in status["disabledCogs"]:
             self.bot.reload_extension(f"cogs.{ext}")
-            await ctx.send(f"{ext} reloaded")
+            await ctx.send(getMessage("reloadCog", ext))
 
         # write status to file
         writeToYAML("status.yml", status)
@@ -226,19 +227,19 @@ class Admin(commands.Cog):
         # if the user has admin permissions, disable them
         if permissions[userid]["admin"]:
             permissions[userid]["admin"] = False
-            await ctx.send(f"Admin permissions disabled for userid {userid}")
+            await ctx.send(getMessage("disableAdmin", userid))
 
         # and if they don't, enable them
         else:
             permissions[userid]["admin"] = True
-            await ctx.send(f"Admin permissions enabled for userid {userid}")
+            await ctx.send(getMessage("enableAdmin", userid))
 
         writeToYAML("permissions.yml", permissions)
 
     @admin.error
     async def adminError(self, ctx, error):
         if isinstance(error, commands.NotOwner):
-            await ctx.send('Nice try.')
+            await ctx.send(getMessage("notOwner"))
 
 
 def setup(bot):

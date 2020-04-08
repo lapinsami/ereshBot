@@ -15,6 +15,34 @@ def writeToYAML(file, contents):
     return
 
 
+def getMessage(msg_name, msg_arg0=None, msg_arg1=None):
+
+    messages = {
+        "logout": "Shutting down...",
+        "disableCog": f"Cog {msg_arg0} disabled.",
+        "enableCog": f"Cog {msg_arg0} enabled.",
+        "reloadCog": f"Cog {msg_arg0} reloaded.",
+        "disableAll": f"All cogs except admin disabled.",
+        "enableAll": f"All cogs enabled.",
+        "reloadAll": f"Reloaded all enabled cogs. Disabled cogs unaffected. Use --load all to load them.",
+        "cogNotFound": f"No cog named {msg_arg0}.",
+        "enablePm": f"Commands in PMs enabled for userid {msg_arg0}.",
+        "disablePm": f"Commands in PMs disabled for userid {msg_arg0}.",
+        "enableAdmin": f"Admin permissions enabled for userid {msg_arg0}.",
+        "disableAdmin": f"Admin permissions disabled for userid {msg_arg0}.",
+        "alreadyBanned": f"Userid {msg_arg0} is already banned.",
+        "isNotBanned": f"Userid {msg_arg0} is not banned.",
+        "banned": f"Userid {msg_arg0} banned.",
+        "unBanned": f"Userid {msg_arg0} unbanned.",
+        "isAdmin": f"Userid {msg_arg0} is an admin.",
+        "nickChanged": f"Thus, shalt thou call me {msg_arg0}.",
+        "statusChanged": f"Playing {msg_arg0} ({msg_arg1}).",
+        "notOwner": f"Nice try."
+    }
+
+    return messages[msg_name]
+
+
 def getStatus():
     cogs = list()
 
