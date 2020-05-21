@@ -31,13 +31,13 @@ async def commandAllowed(ctx):
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name} ({status["nickname"]}), id {bot.user.id}')
+    print(f'\n# Logged in as {bot.user.name} ({status["nickname"]}), id {bot.user.id}')
     await mainMenu(bot)
 
 
 for extension in status["availableCogs"]:
     if extension not in status["disabledCogs"]:
         bot.load_extension(extension)
-        print(f"{extension} loaded")
+        print(f"# {extension} loaded")
 
 bot.run(TOKEN, bot=True, reconnect=True)
