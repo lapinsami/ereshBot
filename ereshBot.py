@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from ereshFunctions import status, permissions
+from cli import mainMenu
 
 
 def getPrefix(botti, message):
@@ -31,6 +32,7 @@ async def commandAllowed(ctx):
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name} ({status["nickname"]}), id {bot.user.id}')
+    await mainMenu(bot)
 
 
 for extension in status["availableCogs"]:

@@ -173,7 +173,7 @@ class Admin(commands.Cog):
                     self.bot.unload_extension(extension)
                     status["disabledCogs"].append(extension)
 
-            await ctx.send(getMessage("dsableAll"))
+            await ctx.send(getMessage("disableAll"))
 
         # unload the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:

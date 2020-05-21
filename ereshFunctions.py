@@ -49,7 +49,6 @@ def getStatus():
     for file in os.listdir('./cogs'):
         if file.endswith(".py"):
             cogs.append(f"cogs.{file[:-3]}")
-            print(f"{file[:-3]} appended to list cogs")
 
     default_status = {
         "nickname": "ereshBot",
