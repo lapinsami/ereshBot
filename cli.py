@@ -1,6 +1,3 @@
-import discord
-
-
 async def mainMenu(bot):
     message_aliases = ["1", "message", "msg"]
     exit_aliases = ["2", "shutdown", "logout", "exit", "quit"]
