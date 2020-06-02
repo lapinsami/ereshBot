@@ -1,9 +1,12 @@
+import os
 import sys
+import time
 from discord.ext import commands
 from discord import File
+import uuid
 
 sys.path.insert(0, '../')
-from ereshFunctions import status, permissions
+from ereshFunctions import status, commandLine
 
 
 class Misc(commands.Cog):
@@ -23,6 +26,35 @@ class Misc(commands.Cog):
                       brief='Eresh dabs')
     async def dab(self, ctx):
         await ctx.send(file=File('eresh-dab.png'))
+
+    @commands.command(name='crab',
+                      description='--crab <upper text>,<lower text>',
+                      brief='Crabs')
+    async def crab(self, ctx, *args):
+        msg = ''
+        for i in range(len(args)):
+            msg += args[i]
+            msg += " "
+
+        if len(msg.split(",")) != 2:
+            await ctx.send("Give me 2 messages separated by a comma")
+            return
+
+        msg1, msg2 = msg[:-1].split(",")
+        video = "crab3.mp4"
+        salt = str(uuid.uuid4()).replace("-", "")[:5]
+        output = f'{msg1}_{msg2}_{salt}.mp4'
+
+        ffmpeg = ['ffmpeg', '-i', f'{video}', '-vf',
+                  f'[in]drawtext=fontfile=mplus.ttf:text={msg1}:fontcolor=white:fontsize=72:bordercolor=black:borderw=2:x=(w-text_w)/2:y=(h-text_h-text_h)/2,drawtext=fontfile=mplus.ttf:text={msg2}:fontcolor=white:fontsize=72:bordercolor=black:borderw=2:x=(w-text_w)/2:y=(h-text_h-text_h)/2+72[out]',
+                  '-codec:a', 'copy', '-preset', 'veryfast', '-y', f'{output}']
+
+        commandLine(ffmpeg)
+
+        await ctx.send(file=File(output))
+
+        if os.path.exists(output):
+            os.remove(output)
 
     @commands.command(name='info',
                       description='Information about the bot and its status',

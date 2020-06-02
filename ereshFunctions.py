@@ -1,4 +1,5 @@
 import os
+import subprocess
 import discord
 import yaml
 
@@ -13,6 +14,14 @@ def writeToYAML(file, contents):
     with open(file, 'w') as f:
         yaml.dump(contents, f)
     return
+
+
+def commandLine(command):
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    for line in process.stdout:
+        print(line)
+    process.wait()
+    print(process.returncode)
 
 
 def getMessage(msg_name, msg_arg0=None, msg_arg1=None):
