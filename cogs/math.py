@@ -165,10 +165,10 @@ class Math(commands.Cog):
                     if servant_chance > 0.9999:
                         servant_chance = 0.9999
                         break
-                    servant_change_increase = probability(rolls, i+1, p)
-                    if round(servant_change_increase, 5) < 0.00001:
+                    servant_chance_increase = probability(rolls, i+1, p)
+                    if round(servant_chance_increase, 5) < 0.00001:
                         break
-                    servant_chance += servant_change_increase
+                    servant_chance += servant_chance_increase
                 chances[servant] = servant_chance
             else:
                 chances[servant] = 0.9999
