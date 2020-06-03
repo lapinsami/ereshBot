@@ -2,7 +2,7 @@
 A Python Discord bot using [discord.py](https://github.com/Rapptz/discord.py). Named after the character Ereshkigal from Fate/Grand Order.
 
 ### Requirements and setup
- * Python >= 3.6
+ * Python >= 3.8
  * pip (for installing the required libraries)
  * Create an application [here](https://discordapp.com/developers/applications), make it a bot and copy the token.
  * `git clone https://github.com/Vogelchevalier/ereshBot.git`
