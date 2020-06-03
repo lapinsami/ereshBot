@@ -159,11 +159,12 @@ class Math(commands.Cog):
 
             total_chances[servant] = servant_chance
 
-        await ctx.send(f">>> For {quartz} Saint Quartz ({rolls} rolls) your chances are:\n"
+        await ctx.send(f">>> For {quartz} <:sq:717830998091366518> ({rolls} rolls) your chances are:\n"
                        f"SSR (5\*): {round(total_chances.get('ssr') * 100, 2)}%\n"
                        f"Banner SSR (5\*): {round(total_chances.get('banner_ssr') * 100, 2)}%\n"
                        f"SR (4\*): {round(total_chances.get('sr') * 100, 2)}%\n"
-                       f"Banner SR (4\*): {round(total_chances.get('banner_sr') * 100, 2)}%\n")
+                       f"Banner SR (4\*): {round(total_chances.get('banner_sr') * 100, 2)}%\n"
+                       f"<:gudako:717830982043959387>")
 
 
 def setup(bot):
