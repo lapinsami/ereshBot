@@ -145,31 +145,40 @@ class Math(commands.Cog):
             await ctx.send("Max SQ: 5000")
             return
 
+        chances = {
+            'ssr': 0.01,
+            'banner_ssr': 0.007,
+            'sr': 0.03,
+            'banner_sr': 0.015
+        }
+
         rolls = quartz // 3
 
         if server.upper() == 'JP':
             rolls += (rolls // 10)
-
-        chances = {
-            'ssr': 0.01,
-            'banner_ssr': 0.008,
-            'sr': 0.03,             # 330 rolls = 100%
-            'banner_sr': 0.015
-        }
+            chances['banner_ssr'] = 0.008
 
         for servant in chances.keys():
             p = chances.get(servant)
             servant_chance = 0.0
-            if rolls < 1233:
+
+            # 1-((1-0.007)^1312) = 0.99990059367
+            if rolls < 1312:
                 for i in range(rolls + 1):
+
                     if servant_chance > 0.9999:
                         servant_chance = 0.9999
                         break
-                    servant_chance_increase = probability(rolls, i+1, p)
-                    if round(servant_chance_increase, 5) < 0.00001:
+
+                    servant_chance_increase = probability(rolls, i + 1, p)
+
+                    # Break if the chance doesn't grow much anymore, but only if at least 1/8 of cases calculated
+                    if servant_chance_increase < 0.000001 and i > rolls / 8:
                         break
                     servant_chance += servant_chance_increase
+
                 chances[servant] = servant_chance
+
             else:
                 chances[servant] = 0.9999
 
