@@ -40,21 +40,37 @@ class Misc(commands.Cog):
             await ctx.send("Give me 2 messages separated by a comma")
             return
 
-        msg1, msg2 = msg[:-1].split(",")
+        msg1, msg2 = msg[:-1].upper().replace(":", "").replace("=", "").replace("/", "").split(",")
+
+        msg1 = msg1[:15]
+        msg2 = msg2[:15]
+
         video = "crab3.mp4"
+        font = "impact.ttf"
+        f_size = "64"
+        f_color = "white"
+
         salt = str(uuid.uuid4()).replace("-", "")[:5]
         output = f'{msg1}_{msg2}_{salt}.mp4'
 
+        line_args1 = f'drawtext=fontfile={font}:text='
+        line_args2 = f':fontcolor={f_color}:fontsize={f_size}:bordercolor=black:borderw=2:x=(w-text_w)/2:y=(h-text_h-text_h)/2'
+
         ffmpeg = ['ffmpeg', '-i', f'{video}', '-vf',
-                  f'[in]drawtext=fontfile=mplus.ttf:text={msg1}:fontcolor=white:fontsize=72:bordercolor=black:borderw=2:x=(w-text_w)/2:y=(h-text_h-text_h)/2,drawtext=fontfile=mplus.ttf:text={msg2}:fontcolor=white:fontsize=72:bordercolor=black:borderw=2:x=(w-text_w)/2:y=(h-text_h-text_h)/2+72[out]',
+                  f'[in]{line_args1}{msg1}{line_args2},{line_args1}{msg2}{line_args2}+{f_size}[out]',
                   '-codec:a', 'copy', '-preset', 'veryfast', '-y', f'{output}']
 
         commandLine(ffmpeg)
 
-        await ctx.send(file=File(output))
-
         if os.path.exists(output):
+            if os.path.getsize(output) > 1024:
+                await ctx.send(file=File(output))
+            else:
+                await ctx.send("Something went wrong")
+
             os.remove(output)
+        else:
+            await ctx.send("Something went wrong")
 
     @commands.command(name='info',
                       description='Information about the bot and its status',
