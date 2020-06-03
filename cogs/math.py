@@ -120,7 +120,10 @@ class Math(commands.Cog):
 
         if n > k:
             for i in range(k + 1, n + 1):
-                chance_for_k_or_more += probability(n, i, p)
+                increase = probability(n, i, p)
+                if round(increase, 8) < 0.00000001:
+                    break
+                chance_for_k_or_more += increase
 
         await ctx.send(f"With a {p} chance:\n"
                        f"Chance for exactly {k} in {n}: {chance_for_exactly_k}\n"
@@ -130,8 +133,18 @@ class Math(commands.Cog):
                       description='Chances for a servant with x amount of SQ',
                       brief='Roll chance for x SQ',
                       aliases=['fgo'])
-    async def fgo(self, ctx, quartz, server='NA'):
-        quartz = int(quartz)
+    async def fgo(self, ctx, quartz="3", server='NA'):
+
+        if not quartz.isdigit():
+            await ctx.send("Please give a number")
+            return
+
+        quartz = abs(int(quartz))
+
+        if quartz > 5000:
+            await ctx.send("Max SQ: 5000")
+            return
+
         rolls = quartz // 3
 
         if server.upper() == 'JP':
@@ -140,23 +153,31 @@ class Math(commands.Cog):
         chances = {
             'ssr': 0.01,
             'banner_ssr': 0.008,
-            'sr': 0.03,
+            'sr': 0.03,             # 330 rolls = 100%
             'banner_sr': 0.015
         }
 
         for servant in chances.keys():
             p = chances.get(servant)
             servant_chance = 0.0
-            for i in range(rolls + 1):
-                servant_chance += probability(rolls, i+1, p)
+            if rolls < 1233:
+                for i in range(rolls + 1):
+                    if servant_chance > 0.9999:
+                        servant_chance = 0.9999
+                        break
+                    servant_change_increase = probability(rolls, i+1, p)
+                    if round(servant_change_increase, 5) < 0.00001:
+                        break
+                    servant_chance += servant_change_increase
+                chances[servant] = servant_chance
+            else:
+                chances[servant] = 0.9999
 
-            chances[servant] = servant_chance
-
-        await ctx.send(f">>> For {quartz} <:sq:717830998091366518> ({rolls} rolls) your chances are:\n"
-                       f"SSR (5\*): {round(chances.get('ssr') * 100, 2)}%\n"
-                       f"Banner SSR (5\*): {round(chances.get('banner_ssr') * 100, 2)}%\n"
-                       f"SR (4\*): {round(chances.get('sr') * 100, 2)}%\n"
-                       f"Banner SR (4\*): {round(chances.get('banner_sr') * 100, 2)}%\n"
+        await ctx.send(f">>> For {quartz} <:sq:717830998091366518> ({rolls} roll{'' if rolls == 1 else 's'}) your chances are:\n"
+                       f"SSR (5\*): {(chances.get('ssr') * 100):.2f}%\n"
+                       f"Banner SSR (5\*): {(chances.get('banner_ssr') * 100):.2f}%\n"
+                       f"SR (4\*): {(chances.get('sr') * 100):.2f}%\n"
+                       f"Banner SR (4\*): {(chances.get('banner_sr') * 100):.2f}%\n"
                        f"<:gudako:717830982043959387>")
 
 
