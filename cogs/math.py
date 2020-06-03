@@ -141,8 +141,8 @@ class Math(commands.Cog):
 
         quartz = abs(int(quartz))
 
-        if quartz > 5000:
-            await ctx.send("Max SQ: 5000")
+        if quartz > 50000000000:
+            await ctx.send("It's 100% alright")
             return
 
         chances = {
@@ -162,8 +162,14 @@ class Math(commands.Cog):
             p = chances.get(servant)
             servant_chance = 0.0
 
-            # 1-((1-0.007)^1312) = 0.99990059367
-            if rolls < 1312:
+            # Either of these 2, depending on if you round up or down (for 4 digit precision)
+            # Numbers will change when NA rateup goes to 0.8%
+            # 1312        1-((1-0.007)^1312) = 0.99990059367, lowest over 0.9999
+            # 1254        1-((1-0.007)^1254) = 0.99985059758, lowest over 0.99985
+            # 0.8% numbers:
+            # 1147        1-((1-0.008)^1147) = 0.99990025572, lowest over 0.9999
+            # 1097        1-((1-0.008)^1097) = 0.99985095948, lowest over 0.99985
+            if rolls < 1254:
                 for i in range(rolls + 1):
 
                     if servant_chance > 0.9999:
@@ -183,10 +189,10 @@ class Math(commands.Cog):
                 chances[servant] = 0.9999
 
         await ctx.send(f">>> For {quartz} <:sq:717830998091366518> ({rolls} roll{'' if rolls == 1 else 's'}) your chances are:\n"
-                       f"SSR (5\*): {(chances.get('ssr') * 100):.2f}%\n"
                        f"Banner SSR (5\*): {(chances.get('banner_ssr') * 100):.2f}%\n"
-                       f"SR (4\*): {(chances.get('sr') * 100):.2f}%\n"
+                       f"SSR (5\*): {(chances.get('ssr') * 100):.2f}%\n"
                        f"Banner SR (4\*): {(chances.get('banner_sr') * 100):.2f}%\n"
+                       f"SR (4\*): {(chances.get('sr') * 100):.2f}%\n"
                        f"<:gudako:717830982043959387>")
 
 
