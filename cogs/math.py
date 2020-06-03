@@ -17,6 +17,10 @@ def convertNumber(number):
         return None
 
 
+def probability(n, k, p):
+    return m.comb(n, k) * (p ** k) * ((1 - p) ** (n - k))
+
+
 class Math(commands.Cog):
 
     def __init__(self, bot):
@@ -24,8 +28,7 @@ class Math(commands.Cog):
 
     @commands.command(name='square',
                       description='Squares the number',
-                      brief='Square x',
-                      aliases=['sq'])
+                      brief='Square x')
     async def square(self, ctx, number=''):
         if convertNumber(number) is None:
             await ctx.send("Numbers, please.")
@@ -97,6 +100,70 @@ class Math(commands.Cog):
             divisor += 6
 
         await ctx.send(f"{number} is a prime!")
+
+    @commands.command(name='prob',
+                      description='--prob <float>% <int k>/<int n>',
+                      brief='k in n',
+                      aliases=['probability', 'chance'])
+    async def prob(self, ctx, percentage, fraction):
+        k, n = fraction.split("/")
+        percentage = percentage.replace("%", "")
+
+        n = int(n)
+        k = int(k)
+        p = float(percentage) / 100
+        if p > 1:
+            p = 1
+
+        chance_for_exactly_k = probability(n, k, p)
+        chance_for_k_or_more = chance_for_exactly_k
+
+        if n > k:
+            for i in range(k + 1, n + 1):
+                chance_for_k_or_more += probability(n, i, p)
+
+        await ctx.send(f"With a {p} chance:\n"
+                       f"Chance for exactly {k} in {n}: {chance_for_exactly_k}\n"
+                       f"Chance for {k} or more in {n}: {chance_for_k_or_more}")
+
+    @commands.command(name='sq',
+                      description='Chances for a servant with x amount of SQ',
+                      brief='Roll chance for x SQ',
+                      aliases=['fgo'])
+    async def fgo(self, ctx, quartz, server='NA'):
+        quartz = int(quartz)
+        rolls = quartz // 3
+
+        if server.upper() == 'JP':
+            rolls += (rolls // 10)
+
+        single_chances = {
+            'ssr': 0.01,
+            'banner_ssr': 0.008,
+            'sr': 0.03,
+            'banner_sr': 0.015
+        }
+
+        total_chances = {
+            'ssr': 0.0,
+            'banner_ssr': 0.0,
+            'sr': 0.0,
+            'banner_sr': 0.0
+        }
+
+        for servant in total_chances.keys():
+            p = single_chances.get(servant)
+            servant_chance = probability(rolls, 1, p)
+            for i in range(1, rolls + 1):
+                servant_chance += probability(rolls, i+1, p)
+
+            total_chances[servant] = servant_chance
+
+        await ctx.send(f">>> For {quartz} Saint Quartz ({rolls} rolls) your chances are:\n"
+                       f"SSR (5\*): {round(total_chances.get('ssr') * 100, 2)}%\n"
+                       f"Banner SSR (5\*): {round(total_chances.get('banner_ssr') * 100, 2)}%\n"
+                       f"SR (4\*): {round(total_chances.get('sr') * 100, 2)}%\n"
+                       f"Banner SR (4\*): {round(total_chances.get('banner_sr') * 100, 2)}%\n")
 
 
 def setup(bot):
