@@ -137,33 +137,26 @@ class Math(commands.Cog):
         if server.upper() == 'JP':
             rolls += (rolls // 10)
 
-        single_chances = {
+        chances = {
             'ssr': 0.01,
             'banner_ssr': 0.008,
             'sr': 0.03,
             'banner_sr': 0.015
         }
 
-        total_chances = {
-            'ssr': 0.0,
-            'banner_ssr': 0.0,
-            'sr': 0.0,
-            'banner_sr': 0.0
-        }
-
-        for servant in total_chances.keys():
-            p = single_chances.get(servant)
-            servant_chance = probability(rolls, 1, p)
-            for i in range(1, rolls + 1):
+        for servant in chances.keys():
+            p = chances.get(servant)
+            servant_chance = 0.0
+            for i in range(rolls + 1):
                 servant_chance += probability(rolls, i+1, p)
 
-            total_chances[servant] = servant_chance
+            chances[servant] = servant_chance
 
         await ctx.send(f">>> For {quartz} <:sq:717830998091366518> ({rolls} rolls) your chances are:\n"
-                       f"SSR (5\*): {round(total_chances.get('ssr') * 100, 2)}%\n"
-                       f"Banner SSR (5\*): {round(total_chances.get('banner_ssr') * 100, 2)}%\n"
-                       f"SR (4\*): {round(total_chances.get('sr') * 100, 2)}%\n"
-                       f"Banner SR (4\*): {round(total_chances.get('banner_sr') * 100, 2)}%\n"
+                       f"SSR (5\*): {round(chances.get('ssr') * 100, 2)}%\n"
+                       f"Banner SSR (5\*): {round(chances.get('banner_ssr') * 100, 2)}%\n"
+                       f"SR (4\*): {round(chances.get('sr') * 100, 2)}%\n"
+                       f"Banner SR (4\*): {round(chances.get('banner_sr') * 100, 2)}%\n"
                        f"<:gudako:717830982043959387>")
 
 
