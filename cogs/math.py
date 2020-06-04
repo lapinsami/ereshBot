@@ -1,4 +1,5 @@
 import math as m
+import time
 from discord.ext import commands
 
 
@@ -121,19 +122,20 @@ class Math(commands.Cog):
         if n > k:
             for i in range(k + 1, n + 1):
                 increase = probability(n, i, p)
-                if round(increase, 8) < 0.00000001:
+                if increase < 0.00000001 and i > n / 8:
                     break
                 chance_for_k_or_more += increase
 
         await ctx.send(f"With a {p} chance:\n"
-                       f"Chance for exactly {k} in {n}: {chance_for_exactly_k}\n"
-                       f"Chance for {k} or more in {n}: {chance_for_k_or_more}")
+                       f"Chance for exactly {k} in {n}: {chance_for_exactly_k:.6f}\n"
+                       f"Chance for {k} or more in {n}: {chance_for_k_or_more:.6f}")
 
     @commands.command(name='sq',
                       description='Chances for a servant with x amount of SQ',
                       brief='Roll chance for x SQ',
                       aliases=['fgo'])
-    async def fgo(self, ctx, quartz="3", server='NA'):
+    async def fgo(self, ctx, quartz="3", server='NA', perf='no'):
+        start_time = time.time()
 
         if not quartz.isdigit():
             await ctx.send("Please give a number")
@@ -155,8 +157,12 @@ class Math(commands.Cog):
         rolls = quartz // 3
 
         if server.upper() == 'JP':
-            rolls += (rolls // 10)
+            rolls += rolls // 10
             chances['banner_ssr'] = 0.008
+            flag = '🇯🇵'
+        else:
+            server = 'NA'
+            flag = '🇺🇸'
 
         for servant in chances.keys():
             p = chances.get(servant)
@@ -188,12 +194,19 @@ class Math(commands.Cog):
             else:
                 chances[servant] = 0.9999
 
-        await ctx.send(f">>> For {quartz} <:sq:717830998091366518> ({rolls} roll{'' if rolls == 1 else 's'}) your chances are:\n"
-                       f"Banner SSR (5\*): {(chances.get('banner_ssr') * 100):.2f}%\n"
-                       f"SSR (5\*): {(chances.get('ssr') * 100):.2f}%\n"
-                       f"Banner SR (4\*): {(chances.get('banner_sr') * 100):.2f}%\n"
-                       f"SR (4\*): {(chances.get('sr') * 100):.2f}%\n"
-                       f"<:gudako:717830982043959387>")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        perf_message = f"<:gudako:717830982043959387> Calculating took {elapsed_time:.4f} seconds"
+
+        await ctx.send(f">>> Chances for {quartz} <:sq:717830998091366518> ({rolls} roll{'' if rolls == 1 else 's'}) "
+                       f"on the {server.upper()} {flag} server:\n"
+                       f"```"
+                       f"Banner SSR (5*): ≈ {(chances.get('banner_ssr') * 100):.2f} %\n"
+                       f"SSR (5*):        ≈ {(chances.get('ssr') * 100):.2f} %\n"
+                       f"Banner SR (4*):  ≈ {(chances.get('banner_sr') * 100):.2f} %\n"
+                       f"SR (4*):         ≈ {(chances.get('sr') * 100):.2f} %"
+                       f"```\n"
+                       f"{perf_message if perf == 'perf' else ''}")
 
 
 def setup(bot):
