@@ -138,8 +138,7 @@ class Math(commands.Cog):
                       description='Chances for a servant with x amount of SQ',
                       brief='Roll chance for x SQ',
                       aliases=['fgo'])
-    async def fgo(self, ctx, quartz="3", server='NA', perf='no'):
-        start_time = time.time()
+    async def fgo(self, ctx, quartz="3", server='NA'):
 
         if not quartz.isdigit():
             await ctx.send("Please give a number")
@@ -168,9 +167,14 @@ class Math(commands.Cog):
             server = 'NA'
             flag = '🇺🇸'
 
+        start_time = time.perf_counter()
+
         for servant in chances.keys():
             p = chances.get(servant)
             servant_chance = 0.0
+
+            if rolls < 2:
+                break
 
             # Either of these 2, depending on if you round up or down (for 4 digit precision)
             # Numbers will change when NA rateup goes to 0.8%
@@ -179,7 +183,7 @@ class Math(commands.Cog):
             # 0.8% numbers:
             # 1147        1-((1-0.008)^1147) = 0.99990025572, lowest over 0.9999
             # 1097        1-((1-0.008)^1097) = 0.99985095948, lowest over 0.99985
-            if rolls < 1254:
+            elif rolls < 1254:
                 for i in range(rolls + 1):
 
                     if servant_chance > 0.9999:
@@ -198,9 +202,9 @@ class Math(commands.Cog):
             else:
                 chances[servant] = 0.9999
 
-        end_time = time.time()
+        end_time = time.perf_counter()
         elapsed_time = end_time - start_time
-        perf_message = f"Calculating took {elapsed_time:.4f} seconds"
+        perf_message = f"{(elapsed_time * 1000):.4f} ms"
 
         rates = f"```"
         rates += f"SSR ▲       ≈ {(chances.get('banner_ssr') * 100):.2f} %\n"
@@ -210,7 +214,7 @@ class Math(commands.Cog):
         rates += f"```"
 
         footer = f"{quartz} SQ  |  {rolls} roll{'' if rolls == 1 else 's'}"
-        footer += f"\n{perf_message if perf == 'perf' else ''}"
+        footer += f"  |  {perf_message}"
 
         await ctx.send(embed=buildEmbed(f'Fate/Grand Order {server.upper()}   {flag}', 'Servant chances (▲ = rateup):', rates, footer, 'https://vignette.wikia.nocookie.net/fategrandorder/images/f/ff/Saintquartz.png'))
 

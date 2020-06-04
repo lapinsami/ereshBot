@@ -1,9 +1,15 @@
 import sys
+import inspect
+import math as m
 from discord.ext import commands
 import discord
 
 sys.path.insert(0, '../')
 from ereshFunctions import checkStatusMode, writeToYAML, getMessage, status, permissions, default_permissions
+
+
+def probability(n, k, p):
+    return m.comb(n, k) * (p ** k) * ((1 - p) ** (n - k))
 
 
 def isAdmin(ctx):
@@ -234,6 +240,19 @@ class Admin(commands.Cog):
             await ctx.send(getMessage("enableAdmin", userid))
 
         writeToYAML("permissions.yml", permissions)
+
+    @commands.command(name='code',
+                      description='Shows the source code for a function',
+                      brief='Source code')
+    @commands.check(isAdmin)
+    async def code(self, ctx, function='probability'):
+        source_code = inspect.getsource(probability)
+
+        message = f"```Python\n"
+        message += source_code
+        message += f"\n```"
+
+        await ctx.send(message)
 
     @admin.error
     async def adminError(self, ctx, error):
