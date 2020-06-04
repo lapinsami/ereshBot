@@ -41,13 +41,19 @@ class Misc(commands.Cog):
 
         msg1, msg2 = msg[:-1].upper().replace(":", "").replace("=", "").replace("/", "").split(",")
 
-        msg1 = msg1[:15]
-        msg2 = msg2[:15]
+        if len(msg1) > 40 or len(msg2) > 40:
+            await ctx.send("Max message length 40 craracters. Cutting to size.")
+
+        msg1 = msg1[:40]
+        msg2 = msg2[:40]
 
         video = "crab3.mp4"
-        font = "impact.ttf"
-        f_size = "64"
+        font = "migu2m.ttf"
+        max_f_size = "64"
         f_color = "white"
+
+        max_text_width = 1080
+        f_size = min(int(max_f_size), max_text_width // max(len(msg1), len(msg2)))
 
         salt = str(uuid.uuid4()).replace("-", "")[:5]
         output = f'{msg1}_{msg2}_{salt}.mp4'

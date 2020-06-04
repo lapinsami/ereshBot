@@ -246,7 +246,7 @@ class Admin(commands.Cog):
                       brief='Source code')
     @commands.check(isAdmin)
     async def code(self, ctx, function='probability'):
-        source_code = inspect.getsource(probability)
+        source_code = inspect.getsource(isAdmin)
 
         message = f"```Python\n"
         message += source_code
