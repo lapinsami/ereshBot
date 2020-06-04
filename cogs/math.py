@@ -1,6 +1,10 @@
 import math as m
 import time
+import sys
 from discord.ext import commands
+
+sys.path.insert(0, '../')
+from ereshFunctions import buildEmbed
 
 
 def convertNumber(number):
@@ -196,17 +200,19 @@ class Math(commands.Cog):
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        perf_message = f"<:gudako:717830982043959387> Calculating took {elapsed_time:.4f} seconds"
+        perf_message = f"Calculating took {elapsed_time:.4f} seconds"
 
-        await ctx.send(f">>> Chances for {quartz} <:sq:717830998091366518> ({rolls} roll{'' if rolls == 1 else 's'}) "
-                       f"on the {server.upper()} {flag} server:\n"
-                       f"```"
-                       f"Banner SSR (5*): ≈ {(chances.get('banner_ssr') * 100):.2f} %\n"
-                       f"SSR (5*):        ≈ {(chances.get('ssr') * 100):.2f} %\n"
-                       f"Banner SR (4*):  ≈ {(chances.get('banner_sr') * 100):.2f} %\n"
-                       f"SR (4*):         ≈ {(chances.get('sr') * 100):.2f} %"
-                       f"```\n"
-                       f"{perf_message if perf == 'perf' else ''}")
+        rates = f"```"
+        rates += f"SSR ▲       ≈ {(chances.get('banner_ssr') * 100):.2f} %\n"
+        rates += f"SSR         ≈ {(chances.get('ssr') * 100):.2f} %\n"
+        rates += f"SR ▲        ≈ {(chances.get('banner_sr') * 100):.2f} %\n"
+        rates += f"SR          ≈ {(chances.get('sr') * 100):.2f} %"
+        rates += f"```"
+
+        footer = f"{quartz} SQ  |  {rolls} roll{'' if rolls == 1 else 's'}"
+        footer += f"\n{perf_message if perf == 'perf' else ''}"
+
+        await ctx.send(embed=buildEmbed(f'Fate/Grand Order {server.upper()}   {flag}', 'Servant chances (▲ = rateup):', rates, footer, 'https://vignette.wikia.nocookie.net/fategrandorder/images/f/ff/Saintquartz.png'))
 
 
 def setup(bot):
