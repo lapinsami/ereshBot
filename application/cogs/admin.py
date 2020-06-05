@@ -1,11 +1,9 @@
-import sys
 import inspect
 import math as m
 from discord.ext import commands
 import discord
-
-sys.path.insert(0, '../')
-from ereshFunctions import checkStatusMode, writeToYAML, getMessage, status, permissions, default_permissions
+from riotwatcher import LolWatcher, ApiError
+from application import checkStatusMode, writeToYAML, getMessage, status, permissions, default_permissions
 
 
 def probability(n, k, p):
@@ -39,7 +37,7 @@ class Admin(commands.Cog):
         status["nickname"] = nickname
         await ctx.send(getMessage("nickChanged", nickname))
         await ctx.guild.get_member(self.bot.user.id).edit(nick=nickname)
-        writeToYAML("status.yml", status)
+        writeToYAML("application/status.yml", status)
 
     # Sets the status
     @commands.command(name='status',
@@ -54,7 +52,7 @@ class Admin(commands.Cog):
         status["onlineStatus"] = str(online)
         await ctx.send(getMessage("statusChanged", str(playing), str(online)))
         await self.bot.change_presence(status=online, activity=playing)
-        writeToYAML("status.yml", status)
+        writeToYAML("application/status.yml", status)
 
     # Logs out the bot
     @commands.command(name='logout',
@@ -87,7 +85,7 @@ class Admin(commands.Cog):
             permissions[userid]["pm_user"] = True
             await ctx.send(getMessage("enablePm", userid))
 
-        writeToYAML("permissions.yml", permissions)
+        writeToYAML("application/permissions.yml", permissions)
 
     # Ban user
     @commands.command(name='ban',
@@ -110,7 +108,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(getMessage("isAdmin", userid))
 
-        writeToYAML("permissions.yml", permissions)
+        writeToYAML("application/permissions.yml", permissions)
 
     # Unban user
     @commands.command(name='unban',
@@ -131,7 +129,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(getMessage("isNotBanned", userid))
 
-        writeToYAML("permissions.yml", permissions)
+        writeToYAML("application/permissions.yml", permissions)
 
     # Enable cog
     @commands.command(name='enable',
@@ -145,7 +143,7 @@ class Admin(commands.Cog):
         if ext == "all":
             for extension in status["disabledCogs"]:
                 if extension != "cogs.admin":
-                    self.bot.load_extension(extension)
+                    self.bot.load_extension(f'application.{extension}')
 
             status["disabledCogs"] = list()
 
@@ -153,7 +151,7 @@ class Admin(commands.Cog):
 
         # load the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:
-            self.bot.load_extension(f"cogs.{ext}")
+            self.bot.load_extension(f"application.cogs.{ext}")
             status["disabledCogs"].remove(f"cogs.{ext}")
             await ctx.send(getMessage("enableCog", ext))
 
@@ -161,7 +159,7 @@ class Admin(commands.Cog):
             await ctx.send(getMessage("cogNotFound", ext))
 
         # write status to file
-        writeToYAML("status.yml", status)
+        writeToYAML("application/status.yml", status)
 
     # Disable cog
     @commands.command(name='disable',
@@ -175,7 +173,7 @@ class Admin(commands.Cog):
         if ext == "all":
             for extension in status["availableCogs"]:
                 if extension != "cogs.admin" and extension not in status["disabledCogs"]:
-                    self.bot.unload_extension(extension)
+                    self.bot.unload_extension(f'application.{extension}')
                     status["disabledCogs"].append(extension)
 
             await ctx.send(getMessage("disableAll"))
@@ -183,7 +181,7 @@ class Admin(commands.Cog):
         # unload the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:
             if ext != "admin" and ext not in status["disabledCogs"]:
-                self.bot.unload_extension(f"cogs.{ext}")
+                self.bot.unload_extension(f"application.cogs.{ext}")
                 status["disabledCogs"].append(f"cogs.{ext}")
                 await ctx.send(getMessage("disableCog", ext))
 
@@ -191,7 +189,7 @@ class Admin(commands.Cog):
             await ctx.send(getMessage("cogNotFound", ext))
 
         # write status to file
-        writeToYAML("status.yml", status)
+        writeToYAML("application/status.yml", status)
 
     # Reload cog
     @commands.command(name='reload',
@@ -205,17 +203,17 @@ class Admin(commands.Cog):
         if ext == "all":
             for extension in status["availableCogs"]:
                 if extension not in status["disabledCogs"]:
-                    self.bot.reload_extension(extension)
+                    self.bot.reload_extension(f'application.{extension}')
 
             await ctx.send(getMessage("reloadAll"))
 
         # reload the cog given as the argument
         elif f"cogs.{ext}" not in status["disabledCogs"]:
-            self.bot.reload_extension(f"cogs.{ext}")
+            self.bot.reload_extension(f"application.cogs.{ext}")
             await ctx.send(getMessage("reloadCog", ext))
 
         # write status to file
-        writeToYAML("status.yml", status)
+        writeToYAML("application/status.yml", status)
 
     # Make user an admin
     @commands.command(name='admin',
@@ -238,7 +236,7 @@ class Admin(commands.Cog):
             permissions[userid]["admin"] = True
             await ctx.send(getMessage("enableAdmin", userid))
 
-        writeToYAML("permissions.yml", permissions)
+        writeToYAML("application/permissions.yml", permissions)
 
     @commands.command(name='code',
                       description='Shows the source code for a function',
@@ -252,6 +250,47 @@ class Admin(commands.Cog):
         message += f"\n```"
 
         await ctx.send(message)
+
+    @commands.command(name='lol',
+                      description='Testing LoL API',
+                      brief='LoL API')
+    @commands.check(isAdmin)
+    async def lol(self, ctx, summoner, server='EUW', mode='basic'):
+
+        with open("application/riot_api_key.csv", "r") as f:
+            key = f.readline()
+
+        watcher = LolWatcher(key)
+
+        servers = {
+            'EUW': 'euw1',
+            'EUNE': 'eun1',
+            'NA': 'na1',
+            'KR': 'kr'
+        }
+
+        server = servers.get(server.upper())
+        summoner_info = {}
+
+        try:
+            summoner_info = watcher.summoner.by_name(server, summoner)
+        except ApiError as err:
+            if err.response.status_code == 404:
+                await ctx.send('No summoner with that name')
+            else:
+                raise
+
+        ranked_info = watcher.league.by_summoner(server, summoner_info['id'])
+
+        if ranked_info:
+            ranked_info = ranked_info[0]
+            rank = f'{ranked_info["tier"]} {ranked_info["rank"]}'
+            lp = f' - {ranked_info["leaguePoints"]} LP'
+        else:
+            rank = 'unranked'
+            lp = f''
+
+        await ctx.send(f'{summoner} is {rank}{lp}')
 
     @admin.error
     async def adminError(self, ctx, error):

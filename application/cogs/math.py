@@ -1,11 +1,8 @@
 import math as m
 import time
-import sys
 import discord
 from discord.ext import commands
-
-sys.path.insert(0, '../')
-from ereshFunctions import status
+from application import status
 
 
 def convertNumber(number):

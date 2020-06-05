@@ -1,8 +1,5 @@
 venv/
-crab3.mp4
-token.csv
-status.yml
-permissions.yml
-cogs/eresh-dab.png
-migu2m.ttf
-last_fm_api_key.csv
+application/media/
+application/api_keys/
+application/status.yml
+application/permissions.yml

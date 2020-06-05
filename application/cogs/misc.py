@@ -1,16 +1,12 @@
 import os
-import sys
 import re
 import requests
 import uuid
 import xml.etree.ElementTree as elemTree
-
 import discord
 from discord.ext import commands
 from discord import File
-
-sys.path.insert(0, '../')
-from ereshFunctions import status, commandLine
+from application import status, commandLine
 
 
 class Misc(commands.Cog):
@@ -109,7 +105,6 @@ class Misc(commands.Cog):
                 disabled_cogs.append(cog[5:])
 
         author_icon = 'https://cdn.discordapp.com/avatars/459704067359244289/a120d9f0a972e15d9ac41a01ac28bcdb.png'
-        github_icon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/500px-Octicons-mark-github.svg.png'
 
         status_message = ""
 
@@ -154,7 +149,7 @@ class Misc(commands.Cog):
 
         api_url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&limit=1"
 
-        with open("last_fm_api_key.csv", "r") as f:
+        with open("application/last_fm_api_key.csv", "r") as f:
             key = f.readline()
 
         request_url = api_url + "&user=" + username + "&api_key=" + key

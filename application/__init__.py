@@ -55,8 +55,8 @@ def getMessage(msg_name, msg_arg0=None, msg_arg1=None):
 def getStatus():
     cogs = list()
 
-    for file in os.listdir('./cogs'):
-        if file.endswith(".py"):
+    for file in os.listdir('application/cogs'):
+        if file.endswith(".py") and 'init' not in file:
             cogs.append(f"cogs.{file[:-3]}")
 
     default_status = {
@@ -67,11 +67,11 @@ def getStatus():
         "availableCogs": cogs
     }
 
-    if not os.path.isfile("status.yml"):
-        writeToYAML("status.yml", default_status)
+    if not os.path.isfile("application/status.yml"):
+        writeToYAML("application/status.yml", default_status)
         return default_status
     else:
-        return getFromYAML("status.yml")
+        return getFromYAML("application/status.yml")
 
 
 def getPermissions():
@@ -82,10 +82,10 @@ def getPermissions():
             "banned": False
         },
     }
-    if not os.path.isfile("permissions.yml"):
-        writeToYAML("permissions.yml", def_perms)
+    if not os.path.isfile("application/permissions.yml"):
+        writeToYAML("application/permissions.yml", def_perms)
 
-    return getFromYAML("permissions.yml")
+    return getFromYAML("application/permissions.yml")
 
 
 def checkStatusMode(mode):

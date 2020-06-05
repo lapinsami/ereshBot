@@ -1,8 +1,6 @@
-import sys
 import discord
 from discord.ext import commands, tasks
-sys.path.insert(0, '../')
-from ereshFunctions import status
+from application import status
 
 
 class BGTasks(commands.Cog):

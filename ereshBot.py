@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from ereshFunctions import status, permissions
+from application import status, permissions
 
 
 def getPrefix(botti, message):
@@ -8,9 +8,9 @@ def getPrefix(botti, message):
     return commands.when_mentioned_or(*prefixes)(botti, message)
 
 
-token_file = open("token.csv", "r")
-TOKEN = token_file.readline()
-token_file.close()
+with open("application/api_keys/discord_api_key.csv", "r") as f:
+    TOKEN = f.readline()
+
 bot = commands.Bot(command_prefix=getPrefix)
 
 
@@ -34,7 +34,7 @@ async def on_ready():
 
 for extension in status["availableCogs"]:
     if extension not in status["disabledCogs"]:
-        bot.load_extension(extension)
+        bot.load_extension(f'application.{extension}')
         print(f"# {extension} loaded")
 
 bot.run(TOKEN, bot=True, reconnect=True)
