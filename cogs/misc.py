@@ -2,10 +2,12 @@ import os
 import sys
 import re
 import requests
+import uuid
 import xml.etree.ElementTree as elemTree
+
+import discord
 from discord.ext import commands
 from discord import File
-import uuid
 
 sys.path.insert(0, '../')
 from ereshFunctions import status, commandLine
@@ -105,8 +107,13 @@ class Misc(commands.Cog):
     @commands.command(name='lastfm',
                       description='Gets the last played track from last.fm API for the provided user',
                       brief='Last.fm last played track',
-                      aliases=['last', 'song'])
-    async def lastfm(self, ctx, username):
+                      aliases=['last', 'song', 'np'])
+    async def lastfm(self, ctx, username='xLapin', mode='tiny'):
+
+        if mode.lower() in ['full', 'verbose', 'detailed', 'detail']:
+            mode = 'full'
+        else:
+            mode = 'tiny'
 
         api_url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&limit=1"
 
@@ -123,12 +130,35 @@ class Misc(commands.Cog):
             return
 
         now_playing = root[0][0].get("nowplaying") == "true"
-
         artist = root[0][0][0].text
         song_title = root[0][0][1].text
-        full_song_name = artist + " - " + song_title
+        album = root[0][0][4].text
+        song_url = root[0][0][5].text
+        album_art = root[0][0][8].text
+        song_title_link = f'[{album}]({song_url})'
+        lastfm_icon = 'http://icons.iconarchive.com/icons/sicons/basic-round-social/512/last.fm-icon.png'
+        footer_text = f'Last.fm'
 
-        await ctx.send("Now playing: " + full_song_name if now_playing else "Last played: " + full_song_name)
+        if mode == 'tiny':
+            embed = discord.Embed(title=song_title,
+                                  colour=discord.Colour.from_rgb(239, 183, 131))
+            embed.set_footer(text=album)
+            embed.set_author(name=artist, icon_url=album_art)
+
+            await ctx.send(embed=embed)
+
+        elif mode == 'full':
+            embed = discord.Embed(title=f'{artist}  -  {song_title}',
+                                  colour=discord.Colour.from_rgb(239, 183, 131))
+            embed.set_footer(icon_url=lastfm_icon, text=footer_text)
+            embed.set_author(name=f'{username}{" is now playing " if now_playing else " last played "}')
+            embed.set_image(url=album_art)
+            embed.add_field(name='Album', value=song_title_link)
+
+            await ctx.send(embed=embed)
+
+        else:
+            await ctx.send("Something went wrong")
 
 
 def setup(bot):

@@ -1,10 +1,11 @@
 import math as m
 import time
 import sys
+import discord
 from discord.ext import commands
 
 sys.path.insert(0, '../')
-from ereshFunctions import buildEmbed
+from ereshFunctions import status
 
 
 def convertNumber(number):
@@ -216,7 +217,16 @@ class Math(commands.Cog):
         footer = f"{quartz} SQ  |  {rolls} roll{'' if rolls == 1 else 's'}"
         footer += f"  |  {perf_message}"
 
-        await ctx.send(embed=buildEmbed(f'Fate/Grand Order {server.upper()}   {flag}', 'Servant chances (▲ = rateup):', rates, footer, 'https://vignette.wikia.nocookie.net/fategrandorder/images/f/ff/Saintquartz.png'))
+        author_icon = 'https://cdn.discordapp.com/avatars/459704067359244289/a120d9f0a972e15d9ac41a01ac28bcdb.png'
+        footer_icon = 'https://vignette.wikia.nocookie.net/fategrandorder/images/f/ff/Saintquartz.png'
+
+        embed = discord.Embed(title=f'Fate/Grand Order {server.upper()}   {flag}',
+                              colour=discord.Colour.from_rgb(239, 183, 131))
+        embed.set_footer(icon_url=footer_icon, text=footer)
+        embed.set_author(name=status['nickname'], icon_url=author_icon)
+        embed.add_field(name='Servant chances (▲ = rateup):', value=rates, inline=False)
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

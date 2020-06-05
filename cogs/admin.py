@@ -44,8 +44,7 @@ class Admin(commands.Cog):
     # Sets the status
     @commands.command(name='status',
                       description='Sets the status',
-                      brief='Set status',
-                      aliases=['np', 'hougu'])
+                      brief='Set status')
     @commands.check(isAdmin)
     async def status(self, ctx, game, mode):
         playing = discord.Game(game)

@@ -24,16 +24,6 @@ def commandLine(command):
     print(process.returncode)
 
 
-def buildEmbed(title, message_title, message, footer, footer_icon):
-    embed = discord.Embed(title=title,
-                          colour=discord.Colour.from_rgb(239, 183, 131))
-    embed.set_footer(icon_url=footer_icon, text=footer)
-    embed.set_author(name=status['nickname'], icon_url='https://cdn.discordapp.com/avatars/459704067359244289/a120d9f0a972e15d9ac41a01ac28bcdb.png')
-    embed.add_field(name=message_title, value=message, inline=False)
-
-    return embed
-
-
 def getMessage(msg_name, msg_arg0=None, msg_arg1=None):
 
     messages = {
