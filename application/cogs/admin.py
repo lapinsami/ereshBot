@@ -68,7 +68,7 @@ class Admin(commands.Cog):
 
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS["useridhere"]
+            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
 
         # if the user has pm permissions, disable them
         # and if they don't, enable them
@@ -90,7 +90,7 @@ class Admin(commands.Cog):
 
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS["useridhere"]
+            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
 
         # if user already banned, do nothing
         # if user not banned, ban them (if not admin)
@@ -113,7 +113,7 @@ class Admin(commands.Cog):
 
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS["useridhere"]
+            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
 
         # if user banned, unban them
         # if user not banned, do nothing
@@ -218,7 +218,7 @@ class Admin(commands.Cog):
 
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[userid] = BotState.DEF_PERMS["useridhere"]
+            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
 
         # if the user has admin permissions, disable them
         if BotState.PERMS[userid]["admin"]:

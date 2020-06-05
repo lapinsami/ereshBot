@@ -74,8 +74,8 @@ class Auth:
     }
 
     if not os.path.isfile("application/auth.yml"):
-        writeToYAML("application/auth.yml", DEF_KEYS)
-        __KEYS = DEF_KEYS
+        __KEYS = DEF_KEYS['api_keys']
+        writeToYAML("application/auth.yml", __KEYS)
     else:
         __KEYS = getFromYAML("application/auth.yml")['api_keys']
 
@@ -90,16 +90,14 @@ class Auth:
 class BotState:
 
     DEF_PERMS = {
-        "useridhere": {
-            "admin": False,
-            "pm_user": False,
-            "banned": False
-        },
+        "admin": False,
+        "pm_user": False,
+        "banned": False
     }
 
     if not os.path.isfile("application/permissions.yml"):
-        writeToYAML("application/permissions.yml", DEF_PERMS)
-        PERMS = DEF_PERMS
+        PERMS = {'default perms': DEF_PERMS}
+        writeToYAML("application/permissions.yml", PERMS)
     else:
         PERMS = getFromYAML("application/permissions.yml")
 
@@ -118,8 +116,8 @@ class BotState:
     }
 
     if not os.path.isfile("application/status.yml"):
-        writeToYAML("application/status.yml", DEF_STATUS)
         STATUS = DEF_STATUS
+        writeToYAML("application/status.yml", STATUS)
     else:
         STATUS = getFromYAML("application/status.yml")
 
