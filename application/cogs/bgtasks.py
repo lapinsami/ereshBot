@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands, tasks
-from application import status
+from application import BotState
 
 
 class BGTasks(commands.Cog):
@@ -11,9 +11,9 @@ class BGTasks(commands.Cog):
     @tasks.loop(minutes=30)
     async def updateStatus(self):
         await self.bot.wait_until_ready()
-        await self.bot.change_presence(status=status["onlineStatus"], activity=discord.Game(status["playingStatus"]))
+        await self.bot.change_presence(status=BotState.STATUS["onlineStatus"], activity=discord.Game(BotState.STATUS["playingStatus"]))
         for server in self.bot.guilds:
-            await server.get_member(self.bot.user.id).edit(nick=status["nickname"])
+            await server.get_member(self.bot.user.id).edit(nick=BotState.STATUS["nickname"])
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -25,8 +25,8 @@ class BGTasks(commands.Cog):
         # 2nd: if an updated nickname exists
         # 3rd: if the updated nick differs from the configured nick
         # = if the bot's nickname was updated but the config was not
-        if before.id == self.bot.user.id and after.nick and after.nick != status["nickname"]:
-            await after.edit(nick=status["nickname"])
+        if before.id == self.bot.user.id and after.nick and after.nick != BotState.STATUS["nickname"]:
+            await after.edit(nick=BotState.STATUS["nickname"])
 
 
 def setup(bot):

@@ -2,7 +2,7 @@ import math as m
 import time
 import discord
 from discord.ext import commands
-from application import status
+from application import BotState
 
 
 def convertNumber(number):
@@ -220,7 +220,7 @@ class Math(commands.Cog):
         embed = discord.Embed(title=f'Fate/Grand Order {server.upper()}   {flag}',
                               colour=discord.Colour.from_rgb(239, 183, 131))
         embed.set_footer(icon_url=footer_icon, text=footer)
-        embed.set_author(name=status['nickname'], icon_url=author_icon)
+        embed.set_author(name=BotState.STATUS['nickname'], icon_url=author_icon)
         embed.add_field(name='Servant chances (▲ = rateup):', value=rates, inline=False)
 
         await ctx.send(embed=embed)

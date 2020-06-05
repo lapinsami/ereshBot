@@ -52,42 +52,6 @@ def getMessage(msg_name, msg_arg0=None, msg_arg1=None):
     return messages[msg_name]
 
 
-def getStatus():
-    cogs = list()
-
-    for file in os.listdir('application/cogs'):
-        if file.endswith(".py") and 'init' not in file:
-            cogs.append(f"cogs.{file[:-3]}")
-
-    default_status = {
-        "nickname": "ereshBot",
-        "playingStatus": "with Rin",
-        "onlineStatus": "online",
-        "disabledCogs": list(),
-        "availableCogs": cogs
-    }
-
-    if not os.path.isfile("application/status.yml"):
-        writeToYAML("application/status.yml", default_status)
-        return default_status
-    else:
-        return getFromYAML("application/status.yml")
-
-
-def getPermissions():
-    def_perms = {
-        "useridhere": {
-            "admin": False,
-            "pm_user": False,
-            "banned": False
-        },
-    }
-    if not os.path.isfile("application/permissions.yml"):
-        writeToYAML("application/permissions.yml", def_perms)
-
-    return getFromYAML("application/permissions.yml")
-
-
 def checkStatusMode(mode):
     if mode == 'dnd':
         return discord.Status.dnd
@@ -99,13 +63,66 @@ def checkStatusMode(mode):
         return discord.Status.online
 
 
-status = getStatus()
-permissions = getPermissions()
+class Auth:
 
-default_permissions = {
-    "useridhere": {
-        "admin": False,
-        "pm_user": False,
-        "banned": False
-    },
-}
+    DEF_KEYS = {
+        "api_keys": {
+            "discord": "",
+            "lastfm": "",
+            "lol": ""
+        },
+    }
+
+    if not os.path.isfile("application/auth.yml"):
+        writeToYAML("application/auth.yml", DEF_KEYS)
+        __KEYS = DEF_KEYS
+    else:
+        __KEYS = getFromYAML("application/auth.yml")['api_keys']
+
+    DISCORD = __KEYS['discord']
+    LASTFM = __KEYS['lastfm']
+    LOL = __KEYS['lol']
+
+    def __getattr__(self, item):
+        return item
+
+
+class BotState:
+
+    DEF_PERMS = {
+        "useridhere": {
+            "admin": False,
+            "pm_user": False,
+            "banned": False
+        },
+    }
+
+    if not os.path.isfile("application/permissions.yml"):
+        writeToYAML("application/permissions.yml", DEF_PERMS)
+        PERMS = DEF_PERMS
+    else:
+        PERMS = getFromYAML("application/permissions.yml")
+
+    __COGS = list()
+
+    for file in os.listdir('application/cogs'):
+        if file.endswith(".py") and 'init' not in file:
+            __COGS.append(f"cogs.{file[:-3]}")
+
+    DEF_STATUS = {
+        "nickname": "ereshBot",
+        "playingStatus": "with Rin",
+        "onlineStatus": "online",
+        "disabledCogs": list(),
+        "availableCogs": __COGS
+    }
+
+    if not os.path.isfile("application/status.yml"):
+        writeToYAML("application/status.yml", DEF_STATUS)
+        STATUS = DEF_STATUS
+    else:
+        STATUS = getFromYAML("application/status.yml")
+
+    def __getattr__(self, item):
+        return item
+

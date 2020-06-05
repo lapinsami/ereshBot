@@ -3,3 +3,4 @@ application/media/
 application/api_keys/
 application/status.yml
 application/permissions.yml
+application/auth.yml
