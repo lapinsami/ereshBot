@@ -91,18 +91,47 @@ class Misc(commands.Cog):
                       description='Information about the bot and its status',
                       brief='Get the bot status and info')
     async def info(self, ctx):
-        message = ""
-        multiline_message = list()
-        multiline_message.append(f">>> Ereshkigal https://github.com/Vogelchevalier/ereshBot")
-        multiline_message.append(f"Nickname: {status['nickname']}")
-        multiline_message.append(f"Status: {status['playingStatus']} ({status['onlineStatus']})")
-        multiline_message.append(f"Available cogs: {status['availableCogs']}")
-        multiline_message.append(f"Disabled cogs: {status['disabledCogs']}")
+        github_url = "https://github.com/Vogelchevalier/ereshBot"
 
-        for line in multiline_message:
-            message += f"{line}\n"
+        disabled_cogs = []
+        enabled_cogs = []
 
-        await ctx.send(message)
+        for cog in status['availableCogs']:
+            if cog not in status['disabledCogs']:
+                enabled_cogs.append(cog[5:])
+            else:
+                disabled_cogs.append(cog[5:])
+
+        author_icon = 'https://cdn.discordapp.com/avatars/459704067359244289/a120d9f0a972e15d9ac41a01ac28bcdb.png'
+        github_icon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/500px-Octicons-mark-github.svg.png'
+
+        status_message = ""
+
+        if len(enabled_cogs) > 1:
+            status_message += f'Enabled cogs: '
+            for cog in enabled_cogs:
+                status_message += f'{cog}, '
+            status_message = status_message[:-2]
+            status_message += '\n\n'
+
+        if len(disabled_cogs) > 0:
+            status_message += f'Disabled cogs: '
+            for cog in disabled_cogs:
+                status_message += f'{cog}, '
+            status_message = status_message[:-2]
+            status_message += '\n\n'
+
+        status_message += 'See --help for commands'
+        status_message += '\n\n'
+        status_message += f'[GitHub]({github_url})'
+
+        embed = discord.Embed(title='Vogelchevalier/ereshBot',
+                              colour=discord.Colour.from_rgb(239, 183, 131))
+        embed.set_footer(icon_url=github_icon, text='License: Zlib')
+        embed.set_author(name=status['nickname'], icon_url=author_icon)
+        embed.add_field(name=f'Playing {status["playingStatus"]}', value=status_message, inline=False)
+
+        await ctx.send(embed=embed)
 
     @commands.command(name='lastfm',
                       description='Gets the last played track from last.fm API for the provided user',
@@ -135,6 +164,7 @@ class Misc(commands.Cog):
         album = root[0][0][4].text
         song_url = root[0][0][5].text
         album_art = root[0][0][8].text
+        album_art_large = root[0][0][9].text
         song_title_link = f'[{album}]({song_url})'
         lastfm_icon = 'http://icons.iconarchive.com/icons/sicons/basic-round-social/512/last.fm-icon.png'
         footer_text = f'Last.fm'
@@ -152,7 +182,7 @@ class Misc(commands.Cog):
                                   colour=discord.Colour.from_rgb(239, 183, 131))
             embed.set_footer(icon_url=lastfm_icon, text=footer_text)
             embed.set_author(name=f'{username}{" is now playing " if now_playing else " last played "}')
-            embed.set_image(url=album_art)
+            embed.set_image(url=album_art_large)
             embed.add_field(name='Album', value=song_title_link)
 
             await ctx.send(embed=embed)

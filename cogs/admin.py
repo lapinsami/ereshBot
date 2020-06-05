@@ -149,7 +149,7 @@ class Admin(commands.Cog):
 
             status["disabledCogs"] = list()
 
-            await ctx.send(getMessage("reloadAll"))
+            await ctx.send(getMessage("enableAll"))
 
         # load the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:
@@ -174,7 +174,7 @@ class Admin(commands.Cog):
         # if "all" as the argument, unload all cogs
         if ext == "all":
             for extension in status["availableCogs"]:
-                if extension != "cogs.admin":
+                if extension != "cogs.admin" and extension not in status["disabledCogs"]:
                     self.bot.unload_extension(extension)
                     status["disabledCogs"].append(extension)
 
@@ -182,7 +182,7 @@ class Admin(commands.Cog):
 
         # unload the cog given as the argument
         elif f"cogs.{ext}" in status["availableCogs"]:
-            if ext != "admin":
+            if ext != "admin" and ext not in status["disabledCogs"]:
                 self.bot.unload_extension(f"cogs.{ext}")
                 status["disabledCogs"].append(f"cogs.{ext}")
                 await ctx.send(getMessage("disableCog", ext))
