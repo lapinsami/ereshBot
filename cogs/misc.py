@@ -1,5 +1,8 @@
 import os
 import sys
+import re
+import requests
+import xml.etree.ElementTree as elemTree
 from discord.ext import commands
 from discord import File
 import uuid
@@ -39,13 +42,18 @@ class Misc(commands.Cog):
             await ctx.send("Give me 2 messages separated by a comma")
             return
 
-        msg1, msg2 = msg[:-1].upper().replace(":", "").replace("=", "").replace("/", "").split(",")
+        msg1 = re.sub(r'[\W_]+', ' ', msg[:-1].upper().split(",")[0])
+        msg2 = re.sub(r'[\W_]+', ' ', msg[:-1].upper().split(",")[1])
 
         if len(msg1) > 40 or len(msg2) > 40:
             await ctx.send("Max message length 40 craracters. Cutting to size.")
 
         msg1 = msg1[:40]
         msg2 = msg2[:40]
+
+        if len(msg1) == 0 and len(msg2) == 0:
+            await ctx.send("Give me at least one message containing letters and/or numbers")
+            return
 
         video = "crab3.mp4"
         font = "migu2m.ttf"
@@ -93,6 +101,34 @@ class Misc(commands.Cog):
             message += f"{line}\n"
 
         await ctx.send(message)
+
+    @commands.command(name='lastfm',
+                      description='Gets the last played track from last.fm API for the provided user',
+                      brief='Last.fm last played track',
+                      aliases=['last', 'song'])
+    async def lastfm(self, ctx, username):
+
+        api_url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&limit=1"
+
+        with open("last_fm_api_key.csv", "r") as f:
+            key = f.readline()
+
+        request_url = api_url + "&user=" + username + "&api_key=" + key
+
+        response = requests.get(request_url)
+        root = elemTree.fromstring(response.content)
+
+        if not root[0]:
+            await ctx.send("Something went wrong. Probably no user with that name.")
+            return
+
+        now_playing = root[0][0].get("nowplaying") == "true"
+
+        artist = root[0][0][0].text
+        song_title = root[0][0][1].text
+        full_song_name = artist + " - " + song_title
+
+        await ctx.send("Now playing: " + full_song_name if now_playing else "Last played: " + full_song_name)
 
 
 def setup(bot):
