@@ -96,6 +96,12 @@ class Misc(commands.Cog):
         disabled_cogs = []
         enabled_cogs = []
 
+        status_icons = {
+            'online': ':green_circle:',
+            'idle': ':yellow_circle:',
+            'dnd': ':red_circle:'
+        }
+
         for cog in status['availableCogs']:
             if cog not in status['disabledCogs']:
                 enabled_cogs.append(cog[5:])
@@ -108,28 +114,30 @@ class Misc(commands.Cog):
         status_message = ""
 
         if len(enabled_cogs) > 1:
-            status_message += f'Enabled cogs: '
+            status_message += f'Enabled cogs\n'
             for cog in enabled_cogs:
-                status_message += f'{cog}, '
-            status_message = status_message[:-2]
-            status_message += '\n\n'
+                status_message += f'- **{cog}**\n'
+            status_message = status_message[:-1]
+            status_message += '\n'
 
         if len(disabled_cogs) > 0:
-            status_message += f'Disabled cogs: '
+            status_message += '\n'
+            status_message += f'Disabled cogs\n'
             for cog in disabled_cogs:
-                status_message += f'{cog}, '
-            status_message = status_message[:-2]
-            status_message += '\n\n'
+                status_message += f'- **{cog}**\n'
+            status_message = status_message[:-1]
+            status_message += '\n'
 
-        status_message += 'See --help for commands'
+        status_message += '\n'
+        status_message += 'See [COMMANDS.md](https://github.com/Vogelchevalier/ereshBot/blob/master/COMMANDS.md) or `--help` for commands'
         status_message += '\n\n'
         status_message += f'[GitHub]({github_url})'
 
         embed = discord.Embed(title='Vogelchevalier/ereshBot',
                               colour=discord.Colour.from_rgb(239, 183, 131))
-        embed.set_footer(icon_url=github_icon, text='License: Zlib')
+        embed.set_footer(text=f'「地の女神、エレシュキガルが命じます！」')
         embed.set_author(name=status['nickname'], icon_url=author_icon)
-        embed.add_field(name=f'Playing {status["playingStatus"]}', value=status_message, inline=False)
+        embed.add_field(name=f'{status_icons.get(status["onlineStatus"])} Playing {status["playingStatus"]}', value=status_message, inline=False)
 
         await ctx.send(embed=embed)
 
