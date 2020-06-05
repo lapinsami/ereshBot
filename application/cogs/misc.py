@@ -25,7 +25,7 @@ class Misc(commands.Cog):
                       description='Ereshkigal dabs',
                       brief='Eresh dabs')
     async def dab(self, ctx):
-        await ctx.send(file=File('eresh-dab.png'))
+        await ctx.send(file=File('application/media/eresh-dab.png'))
 
     @commands.command(name='crab',
                       description='--crab <upper text>,<lower text>',
@@ -53,8 +53,8 @@ class Misc(commands.Cog):
             await ctx.send("Give me at least one message containing letters and/or numbers")
             return
 
-        video = "crab3.mp4"
-        font = "migu2m.ttf"
+        video = "application/media/crab3.mp4"
+        font = "application/media/migu2m.ttf"
         max_f_size = "64"
         f_color = "white"
 
