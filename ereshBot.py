@@ -41,4 +41,3 @@ for extension in BotState.STATUS["availableCogs"]:
         print(f"# {extension} loaded")
 
 bot.run(Auth.DISCORD, bot=True, reconnect=True)
-

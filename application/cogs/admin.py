@@ -1,16 +1,15 @@
 from discord.ext import commands
 import discord
-from riotwatcher import LolWatcher, ApiError
-from application import checkStatusMode, writeToYAML, getMessage, BotState, Auth
+from application import checkStatusMode, writeToYAML, getMessage, BotState
 
 
 def isAdmin(ctx):
+    owner = ctx.author.id == 76579685995118592
+
     if ctx.author.id in BotState.PERMS.keys():
         admin = BotState.PERMS[ctx.author.id]["admin"]
     else:
         admin = False
-
-    owner = ctx.author.id == 76579685995118592
 
     return admin or owner
 
@@ -66,9 +65,11 @@ class Admin(commands.Cog):
     @commands.check(isAdmin)
     async def togglePm(self, ctx, userid):
 
+        userid = int(userid)
+
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
+            BotState.PERMS[userid] = BotState.DEF_PERMS.copy()
 
         # if the user has pm permissions, disable them
         # and if they don't, enable them
@@ -88,9 +89,11 @@ class Admin(commands.Cog):
     @commands.check(isAdmin)
     async def banUser(self, ctx, userid):
 
+        userid = int(userid)
+
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
+            BotState.PERMS[int(userid)] = BotState.DEF_PERMS.copy()
 
         # if user already banned, do nothing
         # if user not banned, ban them (if not admin)
@@ -111,9 +114,11 @@ class Admin(commands.Cog):
     @commands.check(isAdmin)
     async def unbanUser(self, ctx, userid):
 
+        userid = int(userid)
+
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
+            BotState.PERMS[userid] = BotState.DEF_PERMS.copy()
 
         # if user banned, unban them
         # if user not banned, do nothing
@@ -216,9 +221,11 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def admin(self, ctx, userid):
 
+        userid = int(userid)
+
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[str(userid)] = BotState.DEF_PERMS.copy()
+            BotState.PERMS[userid] = BotState.DEF_PERMS.copy()
 
         # if the user has admin permissions, disable them
         if BotState.PERMS[userid]["admin"]:
