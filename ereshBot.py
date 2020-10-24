@@ -13,12 +13,18 @@ bot = commands.Bot(command_prefix=getPrefix)
 
 @bot.check
 async def commandAllowed(ctx):
+
+    # Check if user banned
     if str(ctx.message.author.id) in BotState.PERMS.keys():
         if BotState.PERMS[str(ctx.message.author.id)]["banned"]:
             return False
+
+    # Check if inside a PM
+    # and if the user has permission to use commands in PMs
+    # or if command is allowed in PMs for everyone
     if isinstance(ctx.message.channel, discord.DMChannel):
         if str(ctx.message.author.id) in BotState.PERMS.keys():
-            return BotState.PERMS[str(ctx.message.author.id)]["pm_user"]
+            return BotState.PERMS[str(ctx.message.author.id)]["pm_user"] or ctx.command.name in BotState.PMCOMMANDS
         else:
             return False
     else:

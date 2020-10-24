@@ -232,46 +232,6 @@ class Admin(commands.Cog):
 
         writeToYAML("application/permissions.yml", BotState.PERMS)
 
-    @commands.command(name='lol',
-                      description='Testing LoL API',
-                      brief='LoL API')
-    @commands.check(isAdmin)
-    async def lol(self, ctx, summoner, server='EUW', mode='basic'):
-
-        key = Auth.LOL
-
-        watcher = LolWatcher(key)
-
-        servers = {
-            'EUW': 'euw1',
-            'EUNE': 'eun1',
-            'NA': 'na1',
-            'KR': 'kr'
-        }
-
-        server = servers.get(server.upper())
-        summoner_info = {}
-
-        try:
-            summoner_info = watcher.summoner.by_name(server, summoner)
-        except ApiError as err:
-            if err.response.status_code == 404:
-                await ctx.send('No summoner with that name')
-            else:
-                raise
-
-        ranked_info = watcher.league.by_summoner(server, summoner_info['id'])
-
-        if ranked_info:
-            ranked_info = ranked_info[0]
-            rank = f'{ranked_info["tier"]} {ranked_info["rank"]}'
-            lp = f' - {ranked_info["leaguePoints"]} LP'
-        else:
-            rank = 'unranked'
-            lp = f''
-
-        await ctx.send(f'{summoner} is {rank}{lp}')
-
     @admin.error
     async def adminError(self, ctx, error):
         if isinstance(error, commands.NotOwner):

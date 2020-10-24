@@ -8,6 +8,8 @@ from discord.ext import commands
 from discord import File
 from application import BotState, commandLine, Auth
 
+# TODO: deepfry image with Pillow https://pillow.readthedocs.io/en/stable/reference/ImageEnhance.html
+
 
 class Misc(commands.Cog):
 
@@ -31,6 +33,9 @@ class Misc(commands.Cog):
                       description='--crab <upper text>,<lower text>',
                       brief='Crabs')
     async def crab(self, ctx, *args):
+        # TODO: subtitles instead of drawtext
+        # TODO: line/underlined text
+        # TODO: move to image/video manipulation cog
         msg = ''
         for i in range(len(args)):
             msg += args[i]
