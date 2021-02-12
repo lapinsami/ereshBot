@@ -6,7 +6,8 @@ import xml.etree.ElementTree as elemTree
 import discord
 from discord.ext import commands
 from discord import File
-from application import BotState, commandLine, Auth
+from application import BotState, commandLine, Auth, generateMessage
+
 
 # TODO: deepfry image with Pillow https://pillow.readthedocs.io/en/stable/reference/ImageEnhance.html
 
@@ -94,8 +95,12 @@ class Misc(commands.Cog):
     async def info(self, ctx):
         github_url = "https://github.com/Vogelchevalier/ereshBot"
 
-        disabled_cogs = []
-        enabled_cogs = []
+        disabled_cogs = list()
+        enabled_cogs = list()
+        admins = list()
+
+        member = await ctx.guild.fetch_member(76579685995118592)
+        admins.append(member.display_name)
 
         status_icons = {
             'online': ':green_circle:',
@@ -109,11 +114,26 @@ class Misc(commands.Cog):
             else:
                 disabled_cogs.append(cog[5:])
 
+        for userid in BotState.PERMS:
+            if BotState.PERMS[userid]["admin"]:
+                member = ctx.guild.get_member(userid)
+                if member:
+                    if member.display_name not in admins:
+                        admins.append(member.display_name)
+
         author_icon = 'https://cdn.discordapp.com/avatars/459704067359244289/a120d9f0a972e15d9ac41a01ac28bcdb.png'
 
         status_message = ""
 
-        if len(enabled_cogs) > 1:
+        if len(admins) > 0:
+            status_message += f'Admins\n'
+            for admin in admins:
+                status_message += f'- **{admin}**\n'
+            status_message = status_message[:-1]
+            status_message += '\n'
+
+        if len(enabled_cogs) > 0:
+            status_message += '\n'
             status_message += f'Enabled cogs\n'
             for cog in enabled_cogs:
                 status_message += f'- **{cog}**\n'
@@ -196,6 +216,24 @@ class Misc(commands.Cog):
 
         else:
             await ctx.send("Something went wrong")
+
+    @commands.command(name='speak',
+                      description='Alkoholiverkosto Rappio Simulator 2020',
+                      brief='Alkoholiverkosto Rappio Simulator 2020',
+                      aliases=['känni', 'ai', 'viisaus', 'puhu', 'viesti'])
+    async def speak(self, ctx):
+
+        await ctx.send(generateMessage())
+
+    @commands.command(name='google',
+                      description='Search Google and post the search link',
+                      brief='Search with Google',
+                      aliases=['search'])
+    async def google(self, ctx, *search_words):
+
+        google_string = "https://www.google.com/search?q="
+
+        await ctx.send(f"<{google_string}{'+'.join(search_words)}>")
 
 
 def setup(bot):

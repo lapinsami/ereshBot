@@ -2,6 +2,19 @@ import os
 import subprocess
 import discord
 import yaml
+import markovify
+
+with open("application/media/kaikkienviestit.txt") as f:
+    text = f.read()
+
+text_model = markovify.NewlineText(text)
+
+
+def generateMessage():
+    msg = ""
+    while not msg:
+        msg = text_model.make_sentence()
+    return msg
 
 
 def getFromYAML(file):

@@ -1,5 +1,6 @@
 venv/
 venv2/
+venv39/
 application/media/
 application/api_keys/
 application/status.yml

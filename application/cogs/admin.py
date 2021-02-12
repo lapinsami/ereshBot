@@ -14,6 +14,18 @@ def isAdmin(ctx):
     return admin or owner
 
 
+def isUserid(userid):
+    if not userid.isnumeric():
+        return False
+
+    userid = int(userid)
+
+    if userid < 1:
+        return False
+
+    return True
+
+
 class Admin(commands.Cog):
 
     def __init__(self, bot):
@@ -26,6 +38,8 @@ class Admin(commands.Cog):
                       aliases=['nickname'])
     @commands.check(isAdmin)
     async def nick(self, ctx, nickname):
+
+        nickname = "🢒 " + nickname
 
         BotState.STATUS["nickname"] = nickname
         await ctx.send(getMessage("nickChanged", nickname))
@@ -65,6 +79,10 @@ class Admin(commands.Cog):
     @commands.check(isAdmin)
     async def togglePm(self, ctx, userid):
 
+        if not isUserid(userid):
+            await ctx.send("Give me a userid")
+            return
+
         userid = int(userid)
 
         # if no permissions set for the userid, set them to default
@@ -87,19 +105,23 @@ class Admin(commands.Cog):
                       description="Bans user from using the bot",
                       brief="Ban user")
     @commands.check(isAdmin)
-    async def banUser(self, ctx, userid):
+    async def ban(self, ctx, userid):
+
+        if not isUserid(userid):
+            await ctx.send("Give me a userid")
+            return
 
         userid = int(userid)
 
         # if no permissions set for the userid, set them to default
         if userid not in BotState.PERMS.keys():
-            BotState.PERMS[int(userid)] = BotState.DEF_PERMS.copy()
+            BotState.PERMS[userid] = BotState.DEF_PERMS.copy()
 
         # if user already banned, do nothing
         # if user not banned, ban them (if not admin)
         if BotState.PERMS[userid]["banned"]:
             await ctx.send(getMessage("alreadyBanned", userid))
-        elif not BotState.PERMS[userid]["admin"]:
+        elif not BotState.PERMS[userid]["admin"] and userid != 76579685995118592:
             BotState.PERMS[userid]["banned"] = True
             await ctx.send(getMessage("banned", userid))
         else:
@@ -112,7 +134,11 @@ class Admin(commands.Cog):
                       description="Unbans user from using the bot",
                       brief="Unban user")
     @commands.check(isAdmin)
-    async def unbanUser(self, ctx, userid):
+    async def unban(self, ctx, userid):
+
+        if not isUserid(userid):
+            await ctx.send("Give me a userid")
+            return
 
         userid = int(userid)
 
@@ -221,6 +247,10 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def admin(self, ctx, userid):
 
+        if not isUserid(userid):
+            await ctx.send("Give me a userid")
+            return
+
         userid = int(userid)
 
         # if no permissions set for the userid, set them to default
@@ -240,9 +270,26 @@ class Admin(commands.Cog):
         writeToYAML("application/permissions.yml", BotState.PERMS)
 
     @admin.error
-    async def adminError(self, ctx, error):
+    async def ownerError(self, ctx, error):
         if isinstance(error, commands.NotOwner):
             await ctx.send(getMessage("notOwner"))
+
+    @togglePm.error
+    @ban.error
+    @unban.error
+    @disable.error
+    @enable.error
+    @logout.error
+    @nick.error
+    @reload.error
+    @status.error
+    async def adminError(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            if ctx.message.author.id in BotState.PERMS.keys():
+                if not BotState.PERMS[ctx.message.author.id]["banned"]:
+                    await ctx.send(getMessage("notOwner"))
+            else:
+                await ctx.send(getMessage("notOwner"))
 
 
 def setup(bot):
