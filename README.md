@@ -11,6 +11,7 @@ A Python Discord bot using [discord.py](https://github.com/Rapptz/discord.py). N
  * `nano token.csv` Paste your token here
  * `python ereshBot.py` (Runs the bot)
  * Get the OAuth2 URL for your bot and add the bot to your server
+ * Some commands need media files not included in the repo
  
 #### Usage
  * Check [COMMANDS.md](COMMANDS.md) or the `--help` command.

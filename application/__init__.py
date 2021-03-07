@@ -2,18 +2,21 @@ import os
 import subprocess
 import discord
 import yaml
-import markovify
+# import markovify
 
-with open("application/media/kaikkienviestit.txt") as f:
-    text = f.read()
 
-text_model = markovify.NewlineText(text)
+# with open("application/media/kaikkienviestit.txt") as f:
+# text = f.read()
+
+# text_model = markovify.NewlineText(text)
+# text_model = markovify.NewlineText("asd\nbsd\ncsd")
 
 
 def generateMessage():
-    msg = ""
-    while not msg:
-        msg = text_model.make_sentence()
+    # msg = ""
+    # while not msg:
+    # msg = text_model.make_sentence()
+    msg = "Command disabled"
     return msg
 
 
@@ -38,7 +41,6 @@ def commandLine(command):
 
 
 def getMessage(msg_name, msg_arg0=None, msg_arg1=None):
-
     messages = {
         "logout": "Shutting down...",
         "disableCog": f"Cog {msg_arg0} disabled.",
@@ -77,7 +79,6 @@ def checkStatusMode(mode):
 
 
 class Auth:
-
     DEF_KEYS = {
         "api_keys": {
             "discord": "",
@@ -101,7 +102,6 @@ class Auth:
 
 
 class BotState:
-
     DEF_PERMS = {
         "admin": False,
         "pm_user": False,
@@ -136,4 +136,3 @@ class BotState:
 
     def __getattr__(self, item):
         return item
-

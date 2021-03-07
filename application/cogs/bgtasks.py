@@ -56,7 +56,7 @@ class BGTasks(commands.Cog):
             return
 
         elif message.author.id == 143323493944131584:
-            if rand.randrange(1, 100) <= 1:
+            if rand.randrange(1, 200) <= 1:
                 l_thumb = '<:peukku2:719541677370638387>'
                 r_thumb = '<:peukku:712075345905451090>'
                 face = '<:jimiW:681903944275984426>'

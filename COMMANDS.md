@@ -1,5 +1,7 @@
 #### Commands
 
+##### Outdated ! See the help command.
+
 Admin:
 * `--admin [userid]` Toggles admin permissions for the user
 * `--allowpm [userid]` Toggles private message permissions for the user
